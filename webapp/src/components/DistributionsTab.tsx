@@ -117,7 +117,7 @@ export default function DistributionsTab({ data }: { data: any[] }) {
           </select>
         </div>
         <div className="flex-1 min-h-0">
-          {chartData && <Bar data={chartData} options={options} />}
+          {chartData && <Bar data={chartData as any} options={options} />}
         </div>
       </div>
       
