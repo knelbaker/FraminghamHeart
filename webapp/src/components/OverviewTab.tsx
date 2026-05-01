@@ -187,9 +187,21 @@ export default function OverviewTab({ data }: { data: any[] }) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[400px]">
-      <div className="bg-surface rounded-lg p-5 border border-border-light shadow-sm">
-        <h3 className="font-sans text-sm font-medium mb-4">CHD Prevalence by Age Group (%)</h3>
+    <div className="flex flex-col gap-8">
+      <div className="bg-surface rounded-lg p-6 border border-border-light shadow-sm border-l-4 border-l-accent">
+        <h2 className="font-serif text-lg text-primary mb-2">About the Study</h2>
+        <p className="font-sans text-sm text-secondary leading-relaxed max-w-5xl">
+          Initiated in 1948, the Framingham Heart Study is a landmark longitudinal cohort study spanning multiple generations. 
+          Its objective was to identify common factors contributing to cardiovascular disease (CVD) and coronary heart disease (CHD) 
+          by tracking a large group of participants who had not yet developed overt symptoms or suffered a heart attack or stroke. 
+          Over the decades, the study has led to the discovery of major risk factors—such as hypertension, high cholesterol, smoking, 
+          obesity, and diabetes—fundamentally shaping modern preventive cardiology and our understanding of human heart health.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[400px]">
+        <div className="bg-surface rounded-lg p-5 border border-border-light shadow-sm">
+          <h3 className="font-sans text-sm font-medium mb-4">CHD Prevalence by Age Group (%)</h3>
         <div className="h-[250px]"><Bar data={chdByAgeData} options={chartOptions} /></div>
       </div>
       
@@ -219,6 +231,7 @@ export default function OverviewTab({ data }: { data: any[] }) {
         </div>
         <div className="h-[250px]"><Scatter data={bmiScatterData} options={scatterOptions as any} /></div>
       </div>
+    </div>
     </div>
   );
 }
