@@ -8,46 +8,19 @@ import {
   PointElement,
   LineElement,
   BarElement,
+  ArcElement,
   Title,
   Tooltip,
   Legend,
   Filler
 } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler);
+import OverviewTab from './OverviewTab';
+import DistributionsTab from './DistributionsTab';
+import CorrelationsTab from './CorrelationsTab';
+import RiskAnalysisTab from './RiskAnalysisTab';
 
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  animation: { duration: 300 },
-  scales: {
-    x: {
-      grid: { display: false },
-      border: { display: true, color: 'rgba(26,25,22,0.25)' },
-      ticks: { font: { family: '"DM Mono", monospace', size: 11 }, color: '#6B6861' }
-    },
-    y: {
-      grid: { color: 'rgba(26,25,22,0.06)' },
-      border: { display: false },
-      ticks: { font: { family: '"DM Mono", monospace', size: 11 }, color: '#6B6861' }
-    }
-  },
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      backgroundColor: '#FFFFFF',
-      titleColor: '#6B6861',
-      bodyColor: '#1A1916',
-      bodyFont: { family: '"DM Mono", monospace' },
-      titleFont: { family: '"DM Sans", sans-serif' },
-      borderColor: 'rgba(26,25,22,0.25)',
-      borderWidth: 0.5,
-      padding: 10,
-      displayColors: true,
-    }
-  }
-};
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
 
 export default function DashboardClient({ initialData }: { initialData: any[] }) {
   const [activeTab, setActiveTab] = useState('Overview');
@@ -63,11 +36,11 @@ export default function DashboardClient({ initialData }: { initialData: any[] })
       if (d.age < ageRange[0] || d.age > ageRange[1]) return false;
       if (sex !== 'All') {
         const isMale = sex === 'Male';
-        if (d.sex !== (isMale ? 1 : 0)) return false;
+        if (d.male !== (isMale ? 1 : 0)) return false;
       }
       if (smoker !== 'All') {
         const isSmoker = smoker === 'Yes';
-        if (d.currentSmoker !== (isSmoker ? 1 : 0) && d.is_smoking !== (isSmoker ? 1 : 0)) return false;
+        if (d.currentSmoker !== (isSmoker ? 1 : 0)) return false;
       }
       return true;
     });
@@ -75,47 +48,22 @@ export default function DashboardClient({ initialData }: { initialData: any[] })
 
   // Metric computations
   const metrics = useMemo(() => {
-    if (filteredData.length === 0) return { age: 0, chd: 0, sysBp: 0, chol: 0 };
+    if (filteredData.length === 0) return { age: '0', chd: '0', sysBp: '0', chol: '0' };
     let ageSum = 0, chdSum = 0, sysBpSum = 0, cholSum = 0;
-    let validBp = 0, validChol = 0;
+    let validAge = 0, validBp = 0, validChol = 0;
     
     filteredData.forEach(d => {
-      ageSum += d.age || 0;
-      chdSum += d.TenYearCHD || d.ten_year_chd || 0;
-      if (d.sysBP || d.sys_bp) { sysBpSum += (d.sysBP || d.sys_bp); validBp++; }
-      if (d.totChol || d.tot_chol) { cholSum += (d.totChol || d.tot_chol); validChol++; }
+      if (typeof d.age === 'number' && !isNaN(d.age)) { ageSum += d.age; validAge++; }
+      if (typeof d.TenYearCHD === 'number' && !isNaN(d.TenYearCHD)) { chdSum += d.TenYearCHD; }
+      if (typeof d.sysBP === 'number' && !isNaN(d.sysBP)) { sysBpSum += d.sysBP; validBp++; }
+      if (typeof d.totChol === 'number' && !isNaN(d.totChol)) { cholSum += d.totChol; validChol++; }
     });
     
     return {
-      age: (ageSum / filteredData.length).toFixed(1),
+      age: validAge ? (ageSum / validAge).toFixed(1) : '0',
       chd: ((chdSum / filteredData.length) * 100).toFixed(1),
       sysBp: validBp ? (sysBpSum / validBp).toFixed(1) : '0',
       chol: validChol ? (cholSum / validChol).toFixed(1) : '0'
-    };
-  }, [filteredData]);
-
-  // Data prep for Overview charts
-  const chdByAgeData = useMemo(() => {
-    const bins: Record<string, [number, number]> = { '30-39': [0,0], '40-49': [0,0], '50-59': [0,0], '60+': [0,0] };
-    filteredData.forEach(d => {
-      let bin = '';
-      if (d.age < 40) bin = '30-39';
-      else if (d.age < 50) bin = '40-49';
-      else if (d.age < 60) bin = '50-59';
-      else bin = '60+';
-      
-      const chd = d.TenYearCHD || d.ten_year_chd ? 1 : 0;
-      bins[bin][0]++; 
-      bins[bin][1] += chd; 
-    });
-    
-    return {
-      labels: Object.keys(bins),
-      datasets: [{
-        label: '% with CHD',
-        data: Object.values(bins).map(v => v[0] ? (v[1]/v[0]*100) : 0),
-        backgroundColor: '#B83232'
-      }]
     };
   }, [filteredData]);
 
@@ -175,7 +123,7 @@ export default function DashboardClient({ initialData }: { initialData: any[] })
         {/* MAIN CONTENT AREA */}
         <main className="flex-1 flex flex-col overflow-hidden relative z-0 bg-base">
           {/* TAB BAR */}
-          <nav className="flex px-8 border-b border-border-light shrink-0">
+          <nav className="flex px-8 border-b border-border-light shrink-0 bg-base">
             {['Overview', 'Distributions', 'Correlations', 'Risk Analysis'].map(tab => (
               <button
                 key={tab}
@@ -193,34 +141,15 @@ export default function DashboardClient({ initialData }: { initialData: any[] })
 
           <div className="flex-1 overflow-y-auto p-8 flex flex-col gap-8 transition-opacity duration-150">
             {/* CHARTS REGION */}
-            {activeTab === 'Overview' && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[400px]">
-                <div className="bg-surface rounded-lg p-5 border border-border-light shadow-sm">
-                  <h3 className="font-sans text-sm font-medium mb-4">CHD Prevalence by Age Group (%)</h3>
-                  <div className="h-[250px]">
-                    <Bar data={chdByAgeData} options={chartOptions} />
-                  </div>
-                </div>
-                <div className="bg-surface rounded-lg p-5 border border-border-light flex items-center justify-center text-secondary font-mono text-xs shadow-sm">
-                  [Systolic BP distribution by sex - placeholder]
-                </div>
-                <div className="bg-surface rounded-lg p-5 border border-border-light flex items-center justify-center text-secondary font-mono text-xs shadow-sm">
-                  [Smoking status breakdown - placeholder]
-                </div>
-                <div className="bg-surface rounded-lg p-5 border border-border-light flex items-center justify-center text-secondary font-mono text-xs shadow-sm">
-                  [BMI vs. 10-year CHD risk - placeholder]
-                </div>
-              </div>
-            )}
-            
-            {activeTab !== 'Overview' && (
-               <div className="flex-1 flex items-center justify-center text-secondary font-mono text-sm">
-                  Tab content for {activeTab} is not implemented in this draft.
-               </div>
-            )}
+            <div className="shrink-0 flex-grow">
+              {activeTab === 'Overview' && <OverviewTab data={filteredData} />}
+              {activeTab === 'Distributions' && <DistributionsTab data={filteredData} />}
+              {activeTab === 'Correlations' && <CorrelationsTab data={filteredData} />}
+              {activeTab === 'Risk Analysis' && <RiskAnalysisTab />}
+            </div>
 
             {/* STATS STRIP */}
-            <div className="grid grid-cols-4 gap-4 mt-auto">
+            <div className="grid grid-cols-4 gap-4 mt-8 shrink-0">
               {[
                 { label: 'Mean Age', value: metrics.age },
                 { label: '% with CHD', value: metrics.chd },
