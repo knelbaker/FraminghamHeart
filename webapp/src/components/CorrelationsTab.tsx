@@ -90,7 +90,7 @@ export default function CorrelationsTab({ data }: { data: any[] }) {
           <div className="grid" style={{ gridTemplateColumns: `100px repeat(${variables.length}, 1fr)` }}>
             <div></div>
             {variables.map(v => (
-              <div key={v} className="text-center text-[10px] text-secondary font-mono rotate-[-45deg] origin-bottom-left h-16">{v}</div>
+              <div key={v} className="flex items-end justify-start text-[10px] text-secondary font-mono rotate-[-45deg] origin-bottom-left h-16 pb-1 pl-2">{v}</div>
             ))}
             {variables.map(rowVar => (
               <React.Fragment key={rowVar}>
