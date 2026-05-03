@@ -32,7 +32,10 @@ export default function CorrelationsTab({ data }: { data: any[] }) {
         if (v1 === v2) {
           mat[v1][v2] = 1;
         } else {
-          const pairs = data.filter(d => d[v1] != null && d[v2] != null);
+          const pairs = data.filter(d => 
+            typeof d[v1] === 'number' && !isNaN(d[v1]) && 
+            typeof d[v2] === 'number' && !isNaN(d[v2])
+          );
           const r = getPearsonCorrelation(pairs.map(p => p[v1]), pairs.map(p => p[v2]));
           mat[v1][v2] = r;
         }
