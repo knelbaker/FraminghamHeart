@@ -36,12 +36,12 @@ The application is designed as a highly interactive, client-side single-page das
 - How I used it: [e.g. "Scaffolded initial component structure, debugged state management issue"]
 - Prompts that worked well: [optional but impressive] 
 
-- Tool Claude (Sonnet 4.6)
+- Tool: Claude (Sonnet 4.6)
 - How I used it: I used Claude to generate in-depth design specifications (found in directives folder), which I reviewed and included in my project for my coding agents to use as a reference for building out the app.
-- Prompts that worked well: "Based on the project information, write a complete design specification in MD format"
+- Prompts that worked well: "Based on the project I have explained to you, write a complete design specification for the app in MD format"
 
-- Tool Antigravity with Gemini 3.1 Pro
-- How I used it: I used Antigravity with Gemini 3.1 Pro to set up agents that researched frameworks and design choices and helped build out the app based on the design specifications.
+- Tool: Antigravity with Gemini 3.1 Pro
+- How I used it: I used Antigravity with Gemini 3.1 Pro to set up skills and agents that researched frameworks and built the initial app based on the design specifications. I also used this tool to debug and make changes to the initial app.
 - Prompts that worked well: "Based on the design specifications provided to you, research and determine what the best front-end framework to use for this app will be.", "You are a senior full-stack developer. Your task is to build out the Framingham Heart Study Viewer app based on the design specifications provided to you in the directives folder."
 
 ## Key Design Decisions
