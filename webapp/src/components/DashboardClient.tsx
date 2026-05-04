@@ -12,7 +12,8 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  LineController
 } from 'chart.js';
 
 import OverviewTab from './OverviewTab';
@@ -20,7 +21,7 @@ import DistributionsTab from './DistributionsTab';
 import CorrelationsTab from './CorrelationsTab';
 import RiskAnalysisTab from './RiskAnalysisTab';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler, LineController);
 
 export default function DashboardClient({ initialData }: { initialData: any[] }) {
   const [activeTab, setActiveTab] = useState('Overview');

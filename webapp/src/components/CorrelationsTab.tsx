@@ -15,7 +15,7 @@ function getPearsonCorrelation(x: number[], y: number[]) {
     sumY2 += y[i] * y[i];
   }
   const num = (n * sumXY) - (sumX * sumY);
-  const den = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+  const den = Math.sqrt(Math.max(0, n * sumX2 - sumX * sumX) * Math.max(0, n * sumY2 - sumY * sumY));
   if (den === 0) return 0;
   return num / den;
 }
