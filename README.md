@@ -20,7 +20,7 @@ Alternatively: visit [https://framingham-heart.vercel.app/](https://framingham-h
 
 The application is designed as an interactive, client-side single-page dashboard using the Next.js App Router.
 
-- **Data Layer**: The Framingham Heart Study dataset is hosted statically as a CSV file (`framingham_heart_study.csv`) and parsed on the client side using PapaParse.
+- **Data Layer**: The Framingham Heart Study dataset is hosted statically as a CSV file (`public/framingham_heart_study.csv`) and parsed on the client side using PapaParse.
 - **State Management**: A reactive state orchestrator in `DashboardClient.tsx` handles global filtering (age, sex, smoking status). React's `useMemo` is used to instantly derive filtered subsets and recalculate summary metrics without unnecessary renders.
 - **Component Structure**:
   - `DashboardClient.tsx`: The primary layout wrapper managing the Masthead, sticky Filter Panel, Tab switching, and the persistent bottom Stats Strip.
@@ -37,19 +37,18 @@ The application is designed as an interactive, client-side single-page dashboard
 - Prompts that worked well: "Based on the project I have explained to you, write a complete design specification for the app in MD format"
 
 - Tool: Antigravity with Gemini 3.1 Pro
-- How I used it: I used Antigravity with Gemini 3.1 Pro to set up skills and agents that researched frameworks and built the initial app based on the design specifications. I also used this tool to debug and make changes to the initial app.
+- How I used it: I used Antigravity with Gemini 3.1 Pro to set up skills and agents that researched frameworks and built the initial app based on the design specifications. I also used this tool to debug and make changes to the initial app until I was satisfied with the product.
 - Prompts that worked well: "Based on the design specifications provided to you, research and determine what the best front-end framework to use for this app will be.", "You are a senior full-stack developer. Your task is to build out the Framingham Heart Study Viewer app based on the design specifications provided to you in the directives folder."
 
 ## Key Design Decisions
-- **Client-Side Data Processing**: Instead of standing up a complex backend database, the Framingham dataset is hosted statically as a CSV and parsed entirely on the client side using PapaParse. This allows the app to be instantly deployed to Vercel as a static site without backend infrastructure.
-- **Aggressive Memoization**: Because the app filters over 4,000 rows of data in real-time, React's `useMemo` was utilized extensively across the application. This ensures that heavy mathematical operations—like the 12x12 Pearson correlation matrix and density histograms—only recalculate when the specific filter dependencies change.
-- **Custom Design System over Component Libraries**: To achieve the strict "clinical-editorial" aesthetic requested in the design specs, we bypassed heavy component libraries (like Material UI) and built custom Tailwind CSS tokens in `globals.css` to perfectly match the requested styling.
+- **Client-Sided Data Processing**: The dataset is hosted statically as a CSV and parsed entirely on the client side using PapaParse. This allows the app to be instantly deployed to Vercel as a static site without backend infrastructure.
+- **Memoization**: Because the app filters over 4,000 rows of data in real-time, React's `useMemo` was used heavily across the application. This ensures that mathematical operations like the 12x12 Pearson correlation matrix and density histograms only recalculate when the filter dependencies change.
+- **Custom Design System**: The app uses a custom design system built with Tailwind CSS tokens in `globals.css` to achieve a specific "clinical-editorial" aesthetic.
 
 ## Challenges & How You Solved Them
 - **Vercel Deployment TypeScript Errors**: Vercel's strict build process failed due to `react-chartjs-2` throwing a type mismatch when attempting to overlay a Line chart on top of a Bar chart for the Distributions histogram. **Solution**: Antigravity diagnosed the Vercel error log locally and applied a type cast (`as any`) to bypass the strict definition, successfully pushing the fix.
-- **Flexbox Overlap Issues**: Initially, the bottom Stats Strip was floating over the charts because of how `flex-1` shrinks containers. **Solution**: Diagnosed the CSS layout issue and wrapped the chart tabs in a `shrink-0 flex-grow` container, explicitly preventing the browser from crushing the charts to fit the viewport.
+- **Flexbox Overlap Issues**: Gemini heavily relied on CSS utility classes like `flex-1` without accounting for browser rendering behaviors. This caused the bottom stats strip to overlap with the charts because `flex-1` allows elements to shrink infinitely. **Solution**: I fixed the layout logic by changing the wrapper to `shrink-0` to prevent the overlapping.
 
 ## What I'd Improve With More Time
-- **Web Workers**: Offload the heavy data processing (especially the correlation matrix generation) to a background Web Worker to ensure the main UI thread never drops frames during rapid filter slider changes.
-- **True Logistic Regression**: Replace the hardcoded Odds Ratios in the Risk Analysis tab with an actual logistic regression model running in JavaScript to provide statistically rigorous patient risk scores.
-- **Dataset Virtualization**: Implement table virtualization to allow the dashboard to seamlessly scale if the dataset grows from 4,000 rows to 100,000+ rows.
+- **Web Workers**: I would offload the heavy data processing (especially the correlation matrix generation) to a background Web Worker to ensure the main UI thread never drops frames during filter slider changes.
+- **Add Logistic Regression**: I would add a logistic regression model to replace the hardcoded Odds Ratios in the Risk Analysis tab to provide more accurate patient risk scores.
