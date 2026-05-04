@@ -18,24 +18,20 @@ Alternatively: visit [https://framingham-heart.vercel.app/](https://framingham-h
 
 ## Architecture
 
-The application is designed as a highly interactive, client-side single-page dashboard using the Next.js App Router.
+The application is designed as an interactive, client-side single-page dashboard using the Next.js App Router.
 
-- **Data Layer**: The Framingham Heart Study dataset is hosted statically as a CSV file (`public/framingham_heart_study.csv`) and parsed on the client side using PapaParse.
-- **State Management**: A reactive state orchestrator in `DashboardClient.tsx` handles global filtering (age, sex, smoking status). React's `useMemo` is heavily leveraged to instantly derive filtered subsets and recalculate summary metrics without redundant renders.
+- **Data Layer**: The Framingham Heart Study dataset is hosted statically as a CSV file (`framingham_heart_study.csv`) and parsed on the client side using PapaParse.
+- **State Management**: A reactive state orchestrator in `DashboardClient.tsx` handles global filtering (age, sex, smoking status). React's `useMemo` is used to instantly derive filtered subsets and recalculate summary metrics without unnecessary renders.
 - **Component Structure**:
   - `DashboardClient.tsx`: The primary layout wrapper managing the Masthead, sticky Filter Panel, Tab switching, and the persistent bottom Stats Strip.
   - **Modular Tab Views**:
-    - `OverviewTab.tsx`: Renders diverse high-level charts (Bar, Area, Horizontal Bar, Scatter).
-    - `DistributionsTab.tsx`: Dynamically calculates histograms and descriptive statistics for selected continuous variables.
-    - `CorrelationsTab.tsx`: Generates an on-the-fly Pearson correlation matrix heatmap and interactive scatter plot builder.
+    - `OverviewTab.tsx`: Renders various charts (Bar, Area, Horizontal Bar, Scatter).
+    - `DistributionsTab.tsx`: Calculates histograms and descriptive statistics for selected continuous variables.
+    - `CorrelationsTab.tsx`: Generates a Pearson correlation matrix heatmap and interactive scatter plot builder.
     - `RiskAnalysisTab.tsx`: Displays logistic odds ratios and features an interactive "patient profile" that feeds a 10-year CHD risk calculator gauge.
 - **Design System**: Strict adherence to a custom "clinical-editorial" aesthetic using Tailwind CSS v4 design tokens (defined in `globals.css`) for typography, colors, and layout consistency.
 
 ## AI Tools Used
- - Tool: [e.g. Cursor + Claude]
-- How I used it: [e.g. "Scaffolded initial component structure, debugged state management issue"]
-- Prompts that worked well: [optional but impressive] 
-
 - Tool: Claude (Sonnet 4.6)
 - How I used it: I used Claude to generate in-depth design specifications (found in directives folder), which I reviewed and included in my project for my coding agents to use as a reference for building out the app.
 - Prompts that worked well: "Based on the project I have explained to you, write a complete design specification for the app in MD format"
